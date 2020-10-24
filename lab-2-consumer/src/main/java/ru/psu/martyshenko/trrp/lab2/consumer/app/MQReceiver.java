@@ -1,12 +1,20 @@
 package ru.psu.martyshenko.trrp.lab2.consumer.app;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import ru.psu.martyshenko.trrp.lab2.consumer.app.TablesConverter;
+import ru.psu.martyshenko.trrp.lab2.app.util.ObjectTransferPreparer;
+import ru.psu.martyshenko.trrp.lab2.app.util.TripleDES;
 import ru.psu.martyshenko.trrp.lab2.fb.tables.pojos.PsuCourses;
 
 import javax.jms.*;
 
-public class ActiveMQReceiver implements Runnable, ExceptionListener {
+public class MQReceiver implements Runnable, ExceptionListener {
+
+    private String passwd;
+
+    MQReceiver (String passwd) {
+        this.passwd = passwd;
+    }
+
     public void run() {
         while (true) {
             try {
@@ -29,11 +37,14 @@ public class ActiveMQReceiver implements Runnable, ExceptionListener {
                 // Wait for a message
                 Message message = consumer.receive();
 
-                if (message instanceof ObjectMessage) {
-                    ObjectMessage objectMessage = (ObjectMessage) message;
-                    PsuCourses received = (PsuCourses) objectMessage.getObject();
+                if (message instanceof BytesMessage) {
+                    BytesMessage bytesMessage = (BytesMessage) message;
+                    byte[] psuCoursesBytesEncoded = new byte[(int) bytesMessage.getBodyLength()];
+                    bytesMessage.readBytes(psuCoursesBytesEncoded);
+                    byte[] psuCoursesBytesDecoded = TripleDES.decrypt(psuCoursesBytesEncoded, passwd);
+                    PsuCourses psuCourses = (PsuCourses) ObjectTransferPreparer.byteArrayToObject(psuCoursesBytesDecoded);
                     TablesConverter tablesConverter = new TablesConverter();
-                    tablesConverter.convert(received);
+                    tablesConverter.convert(psuCourses);
                     System.out.println("Информация из ActiveMQ успешно сохранена в БД!");
                 } else {
                     System.out.println("Received: " + message);

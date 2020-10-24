@@ -41,6 +41,12 @@
             <artifactId>postgresql</artifactId>
             <version>42.2.16</version>
         </dependency>
+        <dependency>
+            <groupId>ru.psu.martyshenko.trrp</groupId>
+            <artifactId>psu-trrp-lab2</artifactId>
+            <version>0.0.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

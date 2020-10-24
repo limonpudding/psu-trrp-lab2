@@ -1,14 +1,15 @@
 package ru.psu.martyshenko.trrp.lab2.producer.sender;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import ru.psu.martyshenko.trrp.lab2.app.util.ObjectTransferPreparer;
+import ru.psu.martyshenko.trrp.lab2.app.util.TripleDES;
 import ru.psu.martyshenko.trrp.lab2.fb.tables.pojos.PsuCourses;
 
 import javax.jms.*;
 
-public class SenderMQ implements Sender {
+public class MQSender {
 
-    @Override
-    public void sendRow(PsuCourses psuCourses) {
+    public void sendRow(PsuCourses psuCourses, String passwd) {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
         // Create a Connection
@@ -27,8 +28,10 @@ public class SenderMQ implements Sender {
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
             // Create a messages
-            ObjectMessage message = session.createObjectMessage();
-            message.setObject(psuCourses);
+            byte[] psuCoursesBytes = ObjectTransferPreparer.objectToByteArray(psuCourses);
+            byte[] psuCoursesBytesEncoded = TripleDES.encrypt(psuCoursesBytes, passwd);
+            BytesMessage message = session.createBytesMessage();
+            message.writeBytes(psuCoursesBytesEncoded);
 
             // Tell the producer to send the message
             System.out.println("Информация отправлена в ActiveMQ очередь!");
@@ -37,8 +40,8 @@ public class SenderMQ implements Sender {
             // Clean up
             session.close();
             connection.close();
-        } catch (JMSException e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

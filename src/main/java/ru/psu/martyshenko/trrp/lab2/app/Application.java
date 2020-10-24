@@ -1,4 +1,4 @@
-package ru.psu.martyshenko.trrp.lab2.consumer.app;
+package ru.psu.martyshenko.trrp.lab2.app;
 
 public class Application {
     public static void main(String[] args) {
