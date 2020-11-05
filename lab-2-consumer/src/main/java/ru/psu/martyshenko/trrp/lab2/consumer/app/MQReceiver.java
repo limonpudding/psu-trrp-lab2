@@ -1,6 +1,8 @@
 package ru.psu.martyshenko.trrp.lab2.consumer.app;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import ru.psu.martyshenko.trrp.lab2.app.Configuration;
+import ru.psu.martyshenko.trrp.lab2.app.ConfigurationHolder;
 import ru.psu.martyshenko.trrp.lab2.app.util.ObjectTransferPreparer;
 import ru.psu.martyshenko.trrp.lab2.app.util.TripleDES;
 import ru.psu.martyshenko.trrp.lab2.fb.tables.pojos.PsuCourses;
@@ -16,10 +18,11 @@ public class MQReceiver implements Runnable, ExceptionListener {
     }
 
     public void run() {
+        Configuration configuration = ConfigurationHolder.getInstance().getConfiguration();
         while (true) {
             try {
                 // Create a ConnectionFactory
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+configuration.getIp()+":"+configuration.getJmsBrokerPort());
 
                 // Create a Connection
                 Connection connection = connectionFactory.createConnection();
@@ -41,7 +44,10 @@ public class MQReceiver implements Runnable, ExceptionListener {
                     BytesMessage bytesMessage = (BytesMessage) message;
                     byte[] psuCoursesBytesEncoded = new byte[(int) bytesMessage.getBodyLength()];
                     bytesMessage.readBytes(psuCoursesBytesEncoded);
+                    printBytes("Зашифрованная полученная последовательность:", psuCoursesBytesEncoded);
                     byte[] psuCoursesBytesDecoded = TripleDES.decrypt(psuCoursesBytesEncoded, passwd);
+                    printBytes("Дешифрованная полученная последовательность:", psuCoursesBytesDecoded);
+
                     PsuCourses psuCourses = (PsuCourses) ObjectTransferPreparer.byteArrayToObject(psuCoursesBytesDecoded);
                     TablesConverter tablesConverter = new TablesConverter();
                     tablesConverter.convert(psuCourses);
@@ -53,7 +59,6 @@ public class MQReceiver implements Runnable, ExceptionListener {
                 consumer.close();
                 session.close();
                 connection.close();
-                Thread.sleep(100);
             } catch (Exception e) {
                 System.out.println("Caught: " + e);
                 e.printStackTrace();
@@ -62,7 +67,15 @@ public class MQReceiver implements Runnable, ExceptionListener {
     }
 
     @Override
-    public void onException(JMSException e) {
+    public void onException(JMSException ex) {
+        ex.printStackTrace();
+    }
 
+    private static void printBytes(String description, byte[] input) {
+        System.out.println(description);
+        for (byte b:input) {
+            System.out.print(String.format("%02x", b));
+        }
+        System.out.println();
     }
 }

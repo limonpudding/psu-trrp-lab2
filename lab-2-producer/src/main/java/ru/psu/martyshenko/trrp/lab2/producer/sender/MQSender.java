@@ -1,16 +1,19 @@
 package ru.psu.martyshenko.trrp.lab2.producer.sender;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import ru.psu.martyshenko.trrp.lab2.app.ConfigurationHolder;
 import ru.psu.martyshenko.trrp.lab2.app.util.ObjectTransferPreparer;
 import ru.psu.martyshenko.trrp.lab2.app.util.TripleDES;
 import ru.psu.martyshenko.trrp.lab2.fb.tables.pojos.PsuCourses;
+import ru.psu.martyshenko.trrp.lab2.app.Configuration;
 
 import javax.jms.*;
 
 public class MQSender {
 
     public void sendRow(PsuCourses psuCourses, String passwd) {
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+        Configuration configuration = ConfigurationHolder.getInstance().getConfiguration();
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+configuration.getIp()+":" + configuration.getJmsBrokerPort());
 
         // Create a Connection
         try {
@@ -29,7 +32,9 @@ public class MQSender {
 
             // Create a messages
             byte[] psuCoursesBytes = ObjectTransferPreparer.objectToByteArray(psuCourses);
+            printBytes("Исходная последовательность для отправки:", psuCoursesBytes);
             byte[] psuCoursesBytesEncoded = TripleDES.encrypt(psuCoursesBytes, passwd);
+            printBytes("Зашифрованная последовательность для отправки:", psuCoursesBytesEncoded);
             BytesMessage message = session.createBytesMessage();
             message.writeBytes(psuCoursesBytesEncoded);
 
@@ -43,5 +48,13 @@ public class MQSender {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private static void printBytes(String description, byte[] input) {
+        System.out.println(description);
+        for (byte b:input) {
+            System.out.print(String.format("%02x", b));
+        }
+        System.out.println();
     }
 }
