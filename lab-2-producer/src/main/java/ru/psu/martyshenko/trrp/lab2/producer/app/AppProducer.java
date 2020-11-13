@@ -1,9 +1,7 @@
 package ru.psu.martyshenko.trrp.lab2.producer.app;
 
 import ru.psu.martyshenko.trrp.lab2.app.Configuration;
-import ru.psu.martyshenko.trrp.lab2.app.ConfigurationHolder;
 import ru.psu.martyshenko.trrp.lab2.fb.tables.pojos.PsuCourses;
-import ru.psu.martyshenko.trrp.lab2.producer.sender.MQSender;
 import ru.psu.martyshenko.trrp.lab2.producer.service.PsuCoursesService;
 
 import javax.crypto.Cipher;

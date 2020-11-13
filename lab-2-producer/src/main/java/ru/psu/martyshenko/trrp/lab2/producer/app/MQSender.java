@@ -1,7 +1,6 @@
-package ru.psu.martyshenko.trrp.lab2.producer.sender;
+package ru.psu.martyshenko.trrp.lab2.producer.app;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import ru.psu.martyshenko.trrp.lab2.app.ConfigurationHolder;
 import ru.psu.martyshenko.trrp.lab2.app.util.ObjectTransferPreparer;
 import ru.psu.martyshenko.trrp.lab2.app.util.TripleDES;
 import ru.psu.martyshenko.trrp.lab2.fb.tables.pojos.PsuCourses;
@@ -13,7 +12,7 @@ public class MQSender {
 
     public void sendRow(PsuCourses psuCourses, String passwd) {
         Configuration configuration = ConfigurationHolder.getInstance().getConfiguration();
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+configuration.getIp()+":" + configuration.getJmsBrokerPort());
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+configuration.getSocketIp()+":" + configuration.getJmsPort());
 
         // Create a Connection
         try {

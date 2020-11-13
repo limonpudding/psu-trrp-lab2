@@ -1,7 +1,6 @@
 package ru.psu.martyshenko.trrp.lab2.consumer.app;
 
 import ru.psu.martyshenko.trrp.lab2.app.Configuration;
-import ru.psu.martyshenko.trrp.lab2.app.ConfigurationHolder;
 
 import javax.crypto.Cipher;
 import javax.xml.bind.DatatypeConverter;
@@ -31,7 +30,7 @@ public class AppConsumer {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
             KeyPair kp = keyGen.genKeyPair();
-            Socket client = new Socket(configuration.getIp(), configuration.getSocketPort());
+            Socket client = new Socket(configuration.getSocketIp(), configuration.getSocketPort());
             ObjectOutputStream os = new ObjectOutputStream(client.getOutputStream());
             os.writeObject(kp.getPublic());
             os.flush();

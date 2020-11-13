@@ -2,7 +2,6 @@ package ru.psu.martyshenko.trrp.lab2.consumer.app;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import ru.psu.martyshenko.trrp.lab2.app.Configuration;
-import ru.psu.martyshenko.trrp.lab2.app.ConfigurationHolder;
 import ru.psu.martyshenko.trrp.lab2.app.util.ObjectTransferPreparer;
 import ru.psu.martyshenko.trrp.lab2.app.util.TripleDES;
 import ru.psu.martyshenko.trrp.lab2.fb.tables.pojos.PsuCourses;
@@ -22,7 +21,7 @@ public class MQReceiver implements Runnable, ExceptionListener {
         while (true) {
             try {
                 // Create a ConnectionFactory
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+configuration.getIp()+":"+configuration.getJmsBrokerPort());
+                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+configuration.getSocketIp()+":"+configuration.getJmsPort());
 
                 // Create a Connection
                 Connection connection = connectionFactory.createConnection();

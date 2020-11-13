@@ -1,0 +1,6 @@
+socketIp: localhost
+socketPort: 60001
+jmsIp: localhost
+jmsPort: 61616
+dataBaseIp: localhost
+dataBasePort: 3050

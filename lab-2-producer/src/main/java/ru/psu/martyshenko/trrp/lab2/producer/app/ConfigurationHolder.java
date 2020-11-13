@@ -1,7 +1,8 @@
-package ru.psu.martyshenko.trrp.lab2.app;
+package ru.psu.martyshenko.trrp.lab2.producer.app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import ru.psu.martyshenko.trrp.lab2.app.Configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,17 +25,26 @@ public class ConfigurationHolder {
 
             // Если не удалось получить данные из файла, то используются параметры по умолчанию
             configuration = new Configuration();
-            configuration.setIp("localhost");
+            configuration.setSocketIp("127.0.0.1");
             configuration.setSocketPort(60000);
-            configuration.setJmsBrokerPort(61616);
+            configuration.setJmsIp("127.0.0.1");
+            configuration.setJmsPort(61616);
+            configuration.setDataBaseIp("127.0.0.1");
+            configuration.setDataBasePort(3050);
         }
         System.out.println("Загружена конфигурация:");
-        System.out.print("IP: ");
-        System.out.println(configuration.getIp());
+        System.out.print("IP для сокетов: ");
+        System.out.println(configuration.getSocketIp());
         System.out.print("Порт для сокетов: ");
         System.out.println(configuration.getSocketPort());
+        System.out.print("IP для ActiveMQ: ");
+        System.out.println(configuration.getJmsIp());
         System.out.print("Порт для очередей: ");
-        System.out.println(configuration.getJmsBrokerPort());
+        System.out.println(configuration.getJmsPort());
+        System.out.print("IP для БД: ");
+        System.out.println(configuration.getDataBaseIp());
+        System.out.print("Порт для БД: ");
+        System.out.println(configuration.getDataBasePort());
     }
 
     public static ConfigurationHolder getInstance() {
